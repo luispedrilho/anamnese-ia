@@ -1,14 +1,23 @@
 import { useState, useRef, useEffect } from 'react'
 
 function App() {
-  const perguntas = [
+  const perguntasAlimentacao = [
     "Qual sua idade, altura e peso atual?",
     "Você tem alguma restrição alimentar ou condição de saúde (como diabetes, hipertensão, intolerâncias)?",
-    "Você costuma praticar exercícios físicos? Se sim, quais e com que frequência?",
-    "Qual seu objetivo principal? (ex: perder gordura, ganhar massa muscular, melhorar o condicionamento)",
-    "Como é sua alimentação atualmente? (descreva café da manhã, almoço, jantar e lanches)"
-  ]  
+    "Como é sua alimentação atualmente? (descreva café da manhã, almoço, jantar e lanches)",
+    "Você costuma fazer uso de suplementos ou vitaminas?",
+    "Qual é sua rotina diária? (trabalho, horários, atividade física, etc)"
+  ]
 
+  const perguntasTreinamento = [
+    "Qual sua idade, altura e peso atual?",
+    "Você já treina? Se sim, com que frequência e há quanto tempo?",
+    "Tem alguma limitação física ou lesão?",
+    "Qual seu principal objetivo? (ex: emagrecer, ganhar massa, melhorar o condicionamento)",
+    "Onde pretende treinar? (academia, casa, ao ar livre)"
+  ]
+
+  const [tipoPlano, setTipoPlano] = useState(null)
   const [etapa, setEtapa] = useState(0)
   const [chatHistory, setChatHistory] = useState([])
   const [respostaAtual, setRespostaAtual] = useState("")
@@ -17,11 +26,13 @@ function App() {
   const [carregando, setCarregando] = useState(false)
   const chatEndRef = useRef(null)
 
+  const perguntas = tipoPlano === "alimentacao" ? perguntasAlimentacao : perguntasTreinamento
+
   useEffect(() => {
-    if (etapa < perguntas.length && (chatHistory.length === 0 || chatHistory[chatHistory.length - 1].pergunta !== perguntas[etapa])) {
+    if (tipoPlano && etapa < perguntas.length && (chatHistory.length === 0 || chatHistory[chatHistory.length - 1].pergunta !== perguntas[etapa])) {
       setChatHistory([...chatHistory, { pergunta: perguntas[etapa], resposta: "" }])
     }
-  }, [etapa, chatHistory, perguntas])
+  }, [etapa, chatHistory, perguntas, tipoPlano])
 
   const avancar = () => {
     if (!respostaAtual.trim()) return
@@ -47,11 +58,19 @@ function App() {
       const resposta = await fetch(`${apiUrl}/gerar-plano`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ respostas: chatHistory.map(entry => entry.resposta) }),
+        body: JSON.stringify({
+          respostas: chatHistory.map(entry => entry.resposta),
+          tipo: tipoPlano === "treinamento" ? "treino" : "alimentacao"
+        }),
       })
 
       const data = await resposta.json()
-      setPlanoGerado(data.plano)
+      if (data.plano) {
+        setPlanoGerado(data.plano)
+      } else {
+        alert("Erro: resposta da IA vazia ou mal formatada.")
+        console.error("Resposta inesperada:", data)
+      }
     } catch (err) {
       alert("Erro ao gerar plano com IA")
       console.error(err)
@@ -62,6 +81,33 @@ function App() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [chatHistory])
+
+  if (!tipoPlano) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg text-center">
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">
+            Anamnese com IA
+          </h1>
+          <p className="text-gray-600 mb-6">Qual plano você deseja montar?</p>
+          <div className="space-y-4">
+            <button
+              onClick={() => setTipoPlano("alimentacao")}
+              className="w-full bg-green-600 text-white font-medium py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              🥗 Plano de Alimentação
+            </button>
+            <button
+              onClick={() => setTipoPlano("treinamento")}
+              className="w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              🏋️ Plano de Treinamento
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
