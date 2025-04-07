@@ -44,7 +44,7 @@ function App() {
   const gerarPlanoIA = async () => {
     setCarregando(true)
     try {
-      const resposta = await fetch('${apiUrl}/gerar-plano', {
+      const resposta = await fetch(`${apiUrl}/gerar-plano`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ respostas: chatHistory.map(entry => entry.resposta) }),
