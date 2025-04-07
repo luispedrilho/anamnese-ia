@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from "react";
+import logo from "./assets/robo-fitness.png";
 
 function App() {
   const perguntasAlimentacao = [
@@ -7,7 +8,7 @@ function App() {
     "Como é sua alimentação atualmente? (descreva café da manhã, almoço, jantar e lanches)",
     "Você costuma fazer uso de suplementos ou vitaminas?",
     "Qual é sua rotina diária? (trabalho, horários, atividade física, etc)"
-  ]
+  ];
 
   const perguntasTreinamento = [
     "Qual sua idade, altura e peso atual?",
@@ -15,115 +16,150 @@ function App() {
     "Tem alguma limitação física ou lesão?",
     "Qual seu principal objetivo? (ex: emagrecer, ganhar massa, melhorar o condicionamento)",
     "Onde pretende treinar? (academia, casa, ao ar livre)"
-  ]
+  ];
 
-  const [tipoPlano, setTipoPlano] = useState(null)
-  const [etapa, setEtapa] = useState(0)
-  const [chatHistory, setChatHistory] = useState([])
-  const [respostaAtual, setRespostaAtual] = useState("")
-  const [mostrarResumo, setMostrarResumo] = useState(false)
-  const [planoGerado, setPlanoGerado] = useState("")
-  const [carregando, setCarregando] = useState(false)
-  const chatEndRef = useRef(null)
+  const [tipoPlano, setTipoPlano] = useState(null);
+  const [etapa, setEtapa] = useState(0);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [respostaAtual, setRespostaAtual] = useState("");
+  const [mostrarResumo, setMostrarResumo] = useState(false);
+  const [planoGerado, setPlanoGerado] = useState("");
+  const [carregando, setCarregando] = useState(false);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const chatEndRef = useRef(null);
 
-  const perguntas = tipoPlano === "alimentacao" ? perguntasAlimentacao : perguntasTreinamento
+  const perguntas = tipoPlano === "alimentacao" ? perguntasAlimentacao : perguntasTreinamento;
 
   useEffect(() => {
-    if (tipoPlano && etapa < perguntas.length && (chatHistory.length === 0 || chatHistory[chatHistory.length - 1].pergunta !== perguntas[etapa])) {
-      setChatHistory([...chatHistory, { pergunta: perguntas[etapa], resposta: "" }])
+    if (
+      tipoPlano &&
+      etapa < perguntas.length &&
+      (chatHistory.length === 0 || chatHistory[chatHistory.length - 1].pergunta !== perguntas[etapa])
+    ) {
+      setChatHistory([...chatHistory, { pergunta: perguntas[etapa], resposta: "" }]);
     }
-  }, [etapa, chatHistory, perguntas, tipoPlano])
+  }, [etapa, chatHistory, perguntas, tipoPlano]);
 
   const avancar = () => {
-    if (!respostaAtual.trim()) return
-
+    if (!respostaAtual.trim()) return;
     const updatedHistory = chatHistory.map((entry, index) =>
       index === chatHistory.length - 1 ? { ...entry, resposta: respostaAtual } : entry
-    )
+    );
 
-    setChatHistory(updatedHistory)
-    setRespostaAtual("")
-
+    setChatHistory(updatedHistory);
+    setRespostaAtual("");
     if (etapa < perguntas.length - 1) {
-      setEtapa(etapa + 1)
+      setEtapa(etapa + 1);
     } else {
-      setMostrarResumo(true)
+      setMostrarResumo(true);
     }
-  }
+  };
+
+  const voltarInicio = () => {
+    setTipoPlano(null);
+    setEtapa(0);
+    setChatHistory([]);
+    setRespostaAtual("");
+    setMostrarResumo(false);
+    setPlanoGerado("");
+    setMostrarModal(false);
+  };
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const gerarPlanoIA = async () => {
-    setCarregando(true)
+    setCarregando(true);
     try {
       const resposta = await fetch(`${apiUrl}/gerar-plano`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          respostas: chatHistory.map(entry => entry.resposta),
+          respostas: chatHistory.map((entry) => entry.resposta),
           tipo: tipoPlano === "treinamento" ? "treino" : "alimentacao"
-        }),
-      })
+        })
+      });
 
-      const data = await resposta.json()
+      const data = await resposta.json();
       if (data.plano) {
-        setPlanoGerado(data.plano)
+        setPlanoGerado(data.plano);
+        setMostrarModal(true);
       } else {
-        alert("Erro: resposta da IA vazia ou mal formatada.")
-        console.error("Resposta inesperada:", data)
+        alert("Erro: resposta da IA vazia ou mal formatada.");
+        console.error("Resposta inesperada:", data);
       }
     } catch (err) {
-      alert("Erro ao gerar plano com IA")
-      console.error(err)
+      alert("Erro ao gerar plano com IA");
+      console.error(err);
     }
-    setCarregando(false)
-  }
+    setCarregando(false);
+  };
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [chatHistory])
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatHistory]);
 
   if (!tipoPlano) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            Anamnese com IA
-          </h1>
-          <p className="text-gray-600 mb-6">Qual plano você deseja montar?</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] p-6">
+        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
+          <img src={logo} alt="Robo Fitness" className="w-16 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Anamnese com IA</h1>
+          <p className="text-gray-600 text-sm mb-6">
+            Obtenha planos personalizados de saúde com inteligência artificial
+          </p>
           <div className="space-y-4">
             <button
               onClick={() => setTipoPlano("alimentacao")}
-              className="w-full bg-green-600 text-white font-medium py-2 rounded-md hover:bg-green-700 transition-colors"
+              className="w-full bg-green-100 text-green-700 font-semibold px-4 py-3 rounded-lg text-left shadow hover:shadow-md"
             >
               🥗 Plano de Alimentação
+              <div className="text-sm font-normal text-gray-500">
+                Sugestões personalizadas de dieta para o seu dia a dia
+              </div>
             </button>
             <button
               onClick={() => setTipoPlano("treinamento")}
-              className="w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition-colors"
+              className="w-full bg-indigo-100 text-indigo-700 font-semibold px-4 py-3 rounded-lg text-left shadow hover:shadow-md"
             >
               🏋️ Plano de Treinamento
+              <div className="text-sm font-normal text-gray-500">
+                Rotinas de exercícios adaptadas ao seu objetivo
+              </div>
             </button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Anamnese com IA
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] flex items-center justify-center p-4">
+      <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md">
+        <div className="flex items-center gap-3 mb-4">
+          <img src={logo} className="w-10 h-10" alt="Logo" />
+          <div>
+            <h2 className="font-bold text-lg text-gray-800">FitBot</h2>
+            <p className="text-sm text-gray-500">Seu treinador virtual</p>
+          </div>
+        </div>
 
-        <div className="chat-history mb-4">
+        {/* Botão de voltar */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={voltarInicio}
+            className="text-sm text-indigo-500 hover:underline"
+          >
+            ← Voltar para o início
+          </button>
+        </div>
+
+        <div className="chat-history mb-4 max-h-[400px] overflow-y-auto">
           {chatHistory.map((entry, index) => (
             <div key={index} className="mb-2">
-              <div className="bg-blue-100 p-2 rounded-md mb-1">
-                <strong>{entry.pergunta}</strong>
+              <div className="bg-indigo-100 text-sm p-3 rounded-lg mb-1 text-gray-800">
+                {entry.pergunta}
               </div>
               {entry.resposta && (
-                <div className="bg-gray-200 p-2 rounded-md">
+                <div className="bg-gray-100 text-sm p-3 rounded-lg ml-auto text-right text-gray-600">
                   {entry.resposta}
                 </div>
               )}
@@ -135,7 +171,7 @@ function App() {
         {!mostrarResumo ? (
           <>
             <textarea
-              className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+              className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm"
               rows={2}
               value={respostaAtual}
               onChange={(e) => setRespostaAtual(e.target.value)}
@@ -143,38 +179,57 @@ function App() {
             />
             <button
               onClick={avancar}
-              className="w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition-colors"
+              className="w-full bg-indigo-500 text-white font-medium py-2 mt-2 rounded-lg hover:bg-indigo-600"
             >
-              {etapa < perguntas.length - 1 ? "Próxima Pergunta" : "Finalizar"}
+              {etapa < perguntas.length - 1 ? "Próxima" : "Finalizar"} ➡️
             </button>
           </>
-        ) : planoGerado ? (
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-center text-green-700">
-              Plano Gerado
-            </h2>
-            <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded text-sm text-gray-800 mb-4">
-              {planoGerado}
-            </pre>
-            <button
-              onClick={() => window.location.reload()}
-              className="w-full bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700"
-            >
-              Refazer Anamnese
-            </button>
-          </div>
         ) : (
           <button
             onClick={gerarPlanoIA}
-            className="w-full bg-green-600 text-white font-medium py-2 rounded-md hover:bg-green-700 transition-colors"
+            className="w-full bg-green-500 text-white font-medium py-2 rounded-md hover:bg-green-600"
             disabled={carregando}
           >
             {carregando ? "Gerando plano..." : "Gerar plano com IA"}
           </button>
         )}
       </div>
+
+      {/* Modal do Plano Gerado */}
+      {mostrarModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50 px-4">
+          <div className="bg-white max-w-md w-full p-6 rounded-xl shadow-xl relative animate-fadeIn">
+            <h2 className="text-lg font-bold mb-4 text-center text-indigo-600">
+              🎯 Plano Personalizado
+            </h2>
+            <div className="max-h-[400px] overflow-y-auto whitespace-pre-wrap text-sm text-gray-800 mb-4 border p-4 rounded-md bg-gray-50">
+              {planoGerado}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={voltarInicio}
+                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200"
+              >
+                ← Início
+              </button>
+              <button
+                onClick={() => window.location.reload()}
+                className="flex-1 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"
+              >
+                Refazer Anamnese
+              </button>
+            </div>
+            <button
+              onClick={() => setMostrarModal(false)}
+              className="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-xl"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

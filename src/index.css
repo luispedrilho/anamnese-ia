@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Fonte e plano de fundo geral */
+body {
+  @apply bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] text-gray-800 font-sans antialiased;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Histórico de perguntas e respostas */
+.chat-history {
+  @apply max-h-[400px] overflow-y-auto pr-2;
+  scroll-behavior: smooth;
+}
+
+/* Botões com animação suave */
+button {
+  @apply transition-all duration-200 ease-in-out transform;
+}
+
+button:hover {
+  @apply scale-105;
+}
+
+/* Caixa de texto sem redimensionamento */
+textarea {
+  @apply resize-none focus:ring-2 focus:ring-indigo-400 focus:outline-none;
+}
+
+/* Modal do plano gerado */
+.modal-backdrop {
+  @apply fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white p-6 rounded-xl shadow-2xl max-w-xl w-full;
+}
+
+/* Scrollbar custom para chat (opcional) */
+.chat-history::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+  @apply bg-indigo-300 rounded-full;
+}
