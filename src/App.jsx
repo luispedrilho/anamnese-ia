@@ -1,4 +1,3 @@
-// App.jsx atualizado com botão de logout no topo
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "./assets/robo-fitness.png";
@@ -128,10 +127,7 @@ function App() {
   if (!tipoPlano) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] p-6 relative">
-        <button
-          onClick={logout}
-          className="absolute top-4 right-4 text-sm text-indigo-500 hover:underline"
-        >
+        <button onClick={logout} className="absolute top-4 right-4 text-sm text-indigo-500 hover:underline">
           Sair
         </button>
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
@@ -140,26 +136,19 @@ function App() {
           <p className="text-gray-600 text-sm mb-6">
             Obtenha planos personalizados de saúde com inteligência artificial
           </p>
-          <div className="space-y-4">
-            <button
-              onClick={() => setTipoPlano("alimentacao")}
-              className="w-full bg-green-100 text-green-700 font-semibold px-4 py-3 rounded-lg text-left shadow hover:shadow-md"
-            >
+          <div className="space-y-4 mb-6">
+            <button onClick={() => setTipoPlano("alimentacao")} className="w-full bg-green-100 text-green-700 font-semibold px-4 py-3 rounded-lg text-left shadow hover:shadow-md">
               🥗 Plano de Alimentação
-              <div className="text-sm font-normal text-gray-500">
-                Sugestões personalizadas de dieta para o seu dia a dia
-              </div>
+              <div className="text-sm font-normal text-gray-500">Sugestões personalizadas de dieta para o seu dia a dia</div>
             </button>
-            <button
-              onClick={() => setTipoPlano("treinamento")}
-              className="w-full bg-indigo-100 text-indigo-700 font-semibold px-4 py-3 rounded-lg text-left shadow hover:shadow-md"
-            >
+            <button onClick={() => setTipoPlano("treinamento")} className="w-full bg-indigo-100 text-indigo-700 font-semibold px-4 py-3 rounded-lg text-left shadow hover:shadow-md">
               🏋️ Plano de Treinamento
-              <div className="text-sm font-normal text-gray-500">
-                Rotinas de exercícios adaptadas ao seu objetivo
-              </div>
+              <div className="text-sm font-normal text-gray-500">Rotinas de exercícios adaptadas ao seu objetivo</div>
             </button>
           </div>
+          <button onClick={() => navigate("/historico")} className="text-sm text-indigo-600 underline hover:text-indigo-800">
+            📋 Ver meus planos anteriores
+          </button>
         </div>
       </div>
     );
@@ -167,12 +156,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] flex items-center justify-center p-4 relative">
-      <button
-        onClick={logout}
-        className="absolute top-4 right-4 text-sm text-indigo-500 hover:underline"
-      >
-        Sair
-      </button>
+      <button onClick={logout} className="absolute top-4 right-4 text-sm text-indigo-500 hover:underline">Sair</button>
       <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md">
         <div className="flex items-center gap-3 mb-4">
           <img src={logo} className="w-10 h-10" alt="Logo" />
@@ -182,22 +166,14 @@ function App() {
           </div>
         </div>
 
-        {/* Botão de voltar */}
         <div className="flex justify-end mb-4">
-          <button
-            onClick={voltarInicio}
-            className="text-sm text-indigo-500 hover:underline"
-          >
-            ← Voltar para o início
-          </button>
+          <button onClick={voltarInicio} className="text-sm text-indigo-500 hover:underline">← Voltar para o início</button>
         </div>
 
         <div className="chat-history mb-4 max-h-[400px] overflow-y-auto">
           {chatHistory.map((entry, index) => (
             <div key={index} className="mb-2">
-              <div className="bg-indigo-100 text-sm p-3 rounded-lg mb-1 text-gray-800">
-                {entry.pergunta}
-              </div>
+              <div className="bg-indigo-100 text-sm p-3 rounded-lg mb-1 text-gray-800">{entry.pergunta}</div>
               {entry.resposta && (
                 <div className="bg-gray-100 text-sm p-3 rounded-lg ml-auto text-right text-gray-600">
                   {entry.resposta}
@@ -235,7 +211,6 @@ function App() {
         )}
       </div>
 
-      {/* Modal do Plano Gerado */}
       {mostrarModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50 px-4">
           <div className="bg-white max-w-md w-full p-6 rounded-xl shadow-xl relative animate-fadeIn">
@@ -245,24 +220,18 @@ function App() {
             <div className="max-h-[400px] overflow-y-auto whitespace-pre-wrap text-sm text-gray-800 mb-4 border p-4 rounded-md bg-gray-50">
               {planoGerado}
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={voltarInicio}
-                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200"
-              >
+            <div className="flex flex-col gap-2">
+              <button onClick={voltarInicio} className="bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200">
                 ← Início
               </button>
-              <button
-                onClick={() => window.location.reload()}
-                className="flex-1 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700"
-              >
+              <button onClick={() => window.location.reload()} className="bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">
                 Refazer Anamnese
               </button>
+              <button onClick={() => navigate("/historico")} className="text-sm text-indigo-600 underline hover:text-indigo-800">
+                📋 Ver meu histórico de planos
+              </button>
             </div>
-            <button
-              onClick={() => setMostrarModal(false)}
-              className="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-xl"
-            >
+            <button onClick={() => setMostrarModal(false)} className="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-xl">
               ×
             </button>
           </div>
