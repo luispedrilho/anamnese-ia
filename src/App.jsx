@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "./assets/robo-fitness.png";
+import './styles.css';
 
 function App() {
   const navigate = useNavigate();
@@ -24,19 +25,30 @@ function App() {
   };
 
   const perguntasAlimentacao = [
-    "Qual sua idade, altura e peso atual?",
-    "Você tem alguma restrição alimentar ou condição de saúde (como diabetes, hipertensão, intolerâncias)?",
-    "Como é sua alimentação atualmente? (descreva café da manhã, almoço, jantar e lanches)",
-    "Você costuma fazer uso de suplementos ou vitaminas?",
-    "Qual é sua rotina diária? (trabalho, horários, atividade física, etc)"
+    "Qual sua idade?",
+    "Qual sua altura?",
+    "Qual seu peso atual?",
+    "Qual é o seu objetivo com a alimentação? (ex: emagrecer, ganhar massa, melhorar o condicionamento)",
+    "Qual é o horário do seu café da manhã? E o que você costuma comer?",
+    "Qual é o horário do seu almoço? E o que você costuma comer?",
+    "Qual é o horário do seu lanche? E o que você costuma comer?",
+    "Qual é o horário do seu jantar? E o que você costuma comer?",
+    "Você costuma fazer uso de suplementos ou vitaminas? Caso positivo, quais são eles?",
+    "Com que frequência e intensidade você costuma praticar atividade física?",
+    "Você tem alguma restrição alimentar ou condição de saúde? (ex: diabetes, hipertensão, intolerâncias)",
   ];
 
   const perguntasTreinamento = [
-    "Qual sua idade, altura e peso atual?",
-    "Você já treina? Se sim, com que frequência e há quanto tempo?",
+    "Qual sua idade?",
+    "Qual sua altura?",
+    "Qual seu peso atual?",
+    "Qual é o seu objetivo com o treinamento? (ex: emagrecer, ganhar massa, melhorar o condicionamento)",
+    "Você já treina? Caso positivo, qual é o seu tipo de treino? (ex: musculação, corrida, natação, etc)",
+    "Se você já treina, qual é a frequência e há quanto tempo?",
     "Tem alguma limitação física ou lesão?",
-    "Qual seu principal objetivo? (ex: emagrecer, ganhar massa, melhorar o condicionamento)",
-    "Onde pretende treinar? (academia, casa, ao ar livre)"
+    "Para este plano de treino, você pretende fazer quantas vezes por semana?",
+    "Qual é o seu horário para treinar?",
+    "Qual é o seu local para treinar? (ex: academia, casa, ao ar livre)",
   ];
 
   const [tipoPlano, setTipoPlano] = useState(null);
@@ -126,8 +138,8 @@ function App() {
 
   if (!tipoPlano) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] p-6 relative">
-        <button onClick={logout} className="absolute top-4 right-4 text-sm text-indigo-500 hover:underline">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 p-6 relative">
+        <button onClick={logout} className="absolute top-4 right-4 text-sm text-blue-500 hover:underline">
           Sair
         </button>
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
