@@ -1,7 +1,29 @@
+// App.jsx atualizado com botão de logout no topo
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "./assets/robo-fitness.png";
 
 function App() {
+  const navigate = useNavigate();
+  const [usuario, setUsuario] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("usuario");
+
+    if (!token || !userData) {
+      navigate("/login");
+    } else {
+      setUsuario(JSON.parse(userData));
+    }
+  }, [navigate]);
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    navigate("/login");
+  };
+
   const perguntasAlimentacao = [
     "Qual sua idade, altura e peso atual?",
     "Você tem alguma restrição alimentar ou condição de saúde (como diabetes, hipertensão, intolerâncias)?",
@@ -69,9 +91,13 @@ function App() {
   const gerarPlanoIA = async () => {
     setCarregando(true);
     try {
+      const token = localStorage.getItem("token");
       const resposta = await fetch(`${apiUrl}/gerar-plano`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify({
           respostas: chatHistory.map((entry) => entry.resposta),
           tipo: tipoPlano === "treinamento" ? "treino" : "alimentacao"
@@ -97,9 +123,17 @@ function App() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
 
+  if (!usuario) return null;
+
   if (!tipoPlano) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] p-6">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] p-6 relative">
+        <button
+          onClick={logout}
+          className="absolute top-4 right-4 text-sm text-indigo-500 hover:underline"
+        >
+          Sair
+        </button>
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
           <img src={logo} alt="Robo Fitness" className="w-16 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Anamnese com IA</h1>
@@ -132,7 +166,13 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#c4f0ff] to-[#f0eaff] flex items-center justify-center p-4 relative">
+      <button
+        onClick={logout}
+        className="absolute top-4 right-4 text-sm text-indigo-500 hover:underline"
+      >
+        Sair
+      </button>
       <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-md">
         <div className="flex items-center gap-3 mb-4">
           <img src={logo} className="w-10 h-10" alt="Logo" />
