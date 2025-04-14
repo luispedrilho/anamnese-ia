@@ -24,8 +24,3 @@ button {
 button:hover {
   background-color: #ddd;
 }
-
-/* Remove the specific background override */
-/* .min-h-screen {
-   background: none;
-} */ 
